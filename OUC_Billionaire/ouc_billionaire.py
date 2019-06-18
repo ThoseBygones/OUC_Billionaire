@@ -7,11 +7,11 @@ Created on Sun Jun  9 23:47:48 2019
 
 import pygame
 from settings import Settings
-from player import Player
 import game_functions as gf
 from dice import Dice
 from messageboard import Messageboard
 from game_state import GameState
+from player_queue import PlayerQueue
 
 def run_game():
     """游戏运行的主函数"""
@@ -33,8 +33,9 @@ def run_game():
     # 创建所有地点格子
     gf.create_all_locations(ai_settings, screen, locations, location_points)
     
-    # 创建玩家1
-    player1 = Player(ai_settings, screen, locations, 1, "曾致元")
+    # 创建游戏玩家游戏回合顺序队列
+    player_que = PlayerQueue()
+    gf.create_player_queue(ai_settings, screen, locations, player_que)
     
     # 创建信息板
     messageboard = Messageboard(ai_settings, screen, locations)
@@ -54,8 +55,8 @@ def run_game():
     # 开始游戏的主循环
     while True:
         gf.check_events(ai_settings, gs, events_dict, messageboard, dice, 
-                        player1)
+                        player_que)
         gf.update_screen(ai_settings, screen, gs, locations, location_points, 
-                         events_dict, messageboard, dice, player1)
+                         events_dict, messageboard, dice, player_que)
 
 run_game()

@@ -10,9 +10,10 @@ import pygame
 from location import Location
 import json
 import random
+from player import Player
 
 def update_screen(ai_settings, screen, gs, locations, location_points, 
-                  event, messageboard, dice, player1):
+                  event, messageboard, dice, pq):
     """更新屏幕上的图像，并切换到新屏幕"""
     # 每次循环时都重新绘制屏幕
     screen.fill(ai_settings.bg_color)
@@ -28,10 +29,10 @@ def update_screen(ai_settings, screen, gs, locations, location_points,
     pygame.draw.lines(screen, ai_settings.line_color, True, location_points, 3)
         
     # 绘制所有的玩家
-    player1.draw_player()
+    pq.reverse_draw()
     
     # 绘制信息板
-    messageboard.draw_messageboard(gs, player1)
+    messageboard.draw_messageboard(gs, pq)
     
     # 绘制骰子
     dice.draw_dice(dice.cur_dice)
@@ -40,7 +41,7 @@ def update_screen(ai_settings, screen, gs, locations, location_points,
     pygame.display.flip()
 
 # TODO: state应该改成一个类中的成员变量，这样相当于传引用
-def check_events(ai_settings, gs, events_dict, messageboard, dice, player1):
+def check_events(ai_settings, gs, events_dict, messageboard, dice, pq):
     """监视并相应鼠标和键盘事件"""
     for event in pygame.event.get():
         # 退出事件
@@ -53,25 +54,27 @@ def check_events(ai_settings, gs, events_dict, messageboard, dice, player1):
             #print(mouse_x, mouse_y)
             # 检测点击位置是否在骰子图片区域内
             #print(dice.rect.left, dice.rect.right)
+            # 获得当前回合游戏的玩家
+            cur_player = pq.get_first()
             if (gs.game_state == ai_settings.ROLL_DICE and 
                 dice.rect.collidepoint(mouse_x, mouse_y)):
                 step = dice.roll_dice()
-                player1.move(step)
+                cur_player.move(step)
                 gs.game_state = ai_settings.CHOOSE
                 gs.cur_event = trigger_location_event(ai_settings, events_dict, 
-                                                      player1)
+                                                      pq)
                 #messageboard.draw_messageboard(gs, player1)
                 #pygame.display.update()
             elif gs.game_state == ai_settings.CHOOSE:
                 if messageboard.event_msg_rect[1].collidepoint(mouse_x, mouse_y):
                     gs.cur_event = gs.cur_event['choices']['A']
-                    player1.invest(gs.cur_event['change'])
+                    cur_player.invest(gs.cur_event['change'])
                 elif messageboard.event_msg_rect[2].collidepoint(mouse_x, mouse_y):
                     gs.cur_event = gs.cur_event['choices']['B']
-                    player1.invest(gs.cur_event['change'])
+                    cur_player.invest(gs.cur_event['change'])
                 elif messageboard.event_msg_rect[3].collidepoint(mouse_x, mouse_y):
                     gs.cur_event = gs.cur_event['choices']['C']
-                    player1.invest(gs.cur_event['change'])
+                    cur_player.invest(gs.cur_event['change'])
                 else:
                     break
                 gs.game_state = ai_settings.END_ROUND
@@ -80,6 +83,7 @@ def check_events(ai_settings, gs, events_dict, messageboard, dice, player1):
             elif gs.game_state == ai_settings.END_ROUND:
                 if messageboard.button_rect.collidepoint(mouse_x, mouse_y):
                     gs.cur_event = None
+                    pq.next_round()
                     gs.game_state = ai_settings.ROLL_DICE
                     #messageboard.draw_messageboard(gs, player1)
                     #pygame.display.update()
@@ -117,8 +121,21 @@ def read_events_list(ai_settings):
         #print(events_dict)
         return events_dict
 
-def trigger_location_event(ai_settings, events_dict, player1):
+def trigger_location_event(ai_settings, events_dict, pq):
     """在每个地点触发事件"""
     index = random.randint(0, ai_settings.event_cnt - 1)
     return events_dict['events'][index]
-    
+
+def create_player_queue(ai_settings, screen, locations, pq):
+    # 创建所有玩家
+    player1 = Player(ai_settings, screen, locations, 1, "ZZY")
+    player2 = Player(ai_settings, screen, locations, 2, "SJT")
+    player3 = Player(ai_settings, screen, locations, 3, "JFX")
+    player4 = Player(ai_settings, screen, locations, 4, "LLN")
+    player5 = Player(ai_settings, screen, locations, 5, "LYF")
+    # 将所有玩家加入游戏队列
+    pq.push(player1)
+    pq.push(player2)
+    pq.push(player3)
+    pq.push(player4)
+    pq.push(player5)
