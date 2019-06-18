@@ -50,12 +50,12 @@ Language: Python 3.7.3
 
 - #### 游戏过程中掷骰子（本回合初始阶段）的界面
 
-  ![](https://github.com/ThoseBygones/Earth_Defender/raw/master/screenshots/screenshot01.jpg)
+  ![](https://github.com/ThoseBygones/OUC_Billionaire/raw/master/screenshots/screenshot01.png)
 
 - #### 游戏过程中事件触发（本回合玩家做出选择）的界面
 
-  ![](https://github.com/ThoseBygones/Earth_Defender/raw/master/screenshots/screenshot02.jpg)
+  ![](https://github.com/ThoseBygones/OUC_Billionaire/raw/master/screenshots/screenshot02.png)
 
 - #### 游戏过程中结束回合（本回合玩家结束回合）的界面
 
-  ![](https://github.com/ThoseBygones/Earth_Defender/raw/master/screenshots/screenshot03.jpg)
+  ![](https://github.com/ThoseBygones/OUC_Billionaire/raw/master/screenshots/screenshot03.png)
