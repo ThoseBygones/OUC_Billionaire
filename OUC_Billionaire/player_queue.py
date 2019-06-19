@@ -61,11 +61,3 @@ class PlayerQueue():
     def reverse_draw(self):
         for index in range(self.__size - 1, -1, -1):
             self.queue[index].draw_player()
-"""
-player_queue = PlayerQueue()
-player1 = Player("曾致元")
-player_queue.push(player1)
-player2 = Player("罗立娜")
-player_queue.push(player2)
-player_queue.reverse_draw()
-"""

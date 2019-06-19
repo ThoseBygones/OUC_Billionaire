@@ -48,15 +48,18 @@ def run_game():
     
     # 读取事件并创建事件字典
     events_dict = gf.read_events_list(ai_settings)
+    # 读取事件图片并创建列表
+    event_images = gf.read_event_images(ai_settings)
     
     # 游戏当前的状态
     gs = GameState(ai_settings)
     
     # 开始游戏的主循环
     while True:
-        gf.check_events(ai_settings, gs, events_dict, messageboard, dice, 
-                        player_que)
+        gf.check_events(ai_settings, gs, events_dict, event_images, 
+                        messageboard, dice, player_que)
         gf.update_screen(ai_settings, screen, gs, locations, location_points, 
-                         events_dict, messageboard, dice, player_que)
+                         events_dict, event_images, messageboard, dice, 
+                         player_que)
 
 run_game()

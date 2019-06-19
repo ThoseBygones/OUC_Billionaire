@@ -50,3 +50,6 @@ class Settings():
         # 设置地点事件文件路径
         self.events_path = "data/events_list.json"
         
+        # 设置地点事件图片路径
+        self.event_images_dir = "event_images"
+        

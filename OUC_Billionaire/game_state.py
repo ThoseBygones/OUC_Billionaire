@@ -15,5 +15,6 @@ class GameState():
         # 游戏的当前状态
         self.game_state = self.ai_settings.ROLL_DICE
         # 游戏当前事件
-        self.cur_event = None
+        self.cur_event_imgs = None
+        self.cur_event_index = 0
         
