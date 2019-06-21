@@ -25,9 +25,9 @@ class Messageboard():
         self.box_color_3 = self.ai_settings.board_color_3
         
         # 设置面板块位置并创建
-        self.box_1 = pygame.Rect(977, 0, (1320 - 977), 180)
-        self.box_2 = pygame.Rect(977, 180, (1320 - 977), 250)
-        self.box_3 = pygame.Rect(977, 430, (1320 - 977), 230)
+        self.box_1 = pygame.Rect(977, 0, (1320 - 977), 140)
+        self.box_2 = pygame.Rect(977, 140, (1320 - 977), 260)
+        self.box_3 = pygame.Rect(977, 400, (1320 - 977), 260)
         
         # 设置结束回合图片路径
         image_path_str = "images/end_round.png"

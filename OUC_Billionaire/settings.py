@@ -39,7 +39,7 @@ class Settings():
         self.board_color_3 = (255, 218, 185)
         
         # 设置地图上地点数量
-        self.location_cnt = 15
+        self.location_cnt = 0
         
         # 设置地点事件数量
         self.event_cnt = 2

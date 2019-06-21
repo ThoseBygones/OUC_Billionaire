@@ -64,7 +64,7 @@ class TextImage:
         #bg_img.save("prepic.png")
         #print(self.paragraph)
         # 左上角开始
-        x, y = 5, 5
+        x, y = 0, 0
         for paragraph in self.paragraph:
             draw.text((x, y), paragraph, fill=(0, 0, 0), font=TextImage.font)
             y += self.line_height

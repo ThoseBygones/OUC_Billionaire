@@ -99,6 +99,7 @@ def create_location(ai_settings, screen, locations, index, x, y, name):
 def create_all_locations(ai_settings, screen, locations, location_points):
     """创建所有的地点圆点"""
     data = read_locations_list(ai_settings)
+    ai_settings.location_cnt = len(data)
     for i in range(0, ai_settings.location_cnt):
         create_location(ai_settings, screen, locations, i, int(data[i][0]), 
                         int(data[i][1]), data[i][2])
