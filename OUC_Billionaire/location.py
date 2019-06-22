@@ -6,6 +6,7 @@ Created on Sun Jun  9 23:43:40 2019
 """
 
 import pygame
+import random
 
 class Location():
     """地点类"""
@@ -29,6 +30,12 @@ class Location():
         
         # 准备说明文字图像
         self.create_location_name()
+        
+    def trigger_event(self):
+        """触发事件"""
+        # 随机事件的编号
+        index = random.randint(1, self.ai_settings.event_cnt - 1)
+        return index
         
     def create_location_name(self):
         """将说明文字转换为渲染的图像"""

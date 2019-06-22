@@ -60,7 +60,7 @@ def run_game():
     
     # 开始游戏的主循环
     while True:
-        gf.check_events(ai_settings, gs, play_button, events_dict, 
+        gf.check_events(ai_settings, gs, play_button, locations, events_dict, 
                         event_images, messageboard, dice, player_que)
         gf.update_screen(ai_settings, screen, gs, play_button, locations, 
                          location_points, events_dict, event_images, 

@@ -89,25 +89,39 @@ if __name__ == '__main__':
         #print(event)
         save_path = ("OUC_Billionaire/event_images/event_" + 
                      str(event['index']).zfill(3))
-        # 读取所有字符串
-        text = TextImage(event['content'])
-        text_A1 = TextImage(event['A']['choice'])
-        text_A2 = TextImage(event['A']['result'])
-        text_B1 = TextImage(event['B']['choice'])
-        text_B2 = TextImage(event['B']['result'])
-        text_C1 = TextImage(event['C']['choice'])
-        text_C2 = TextImage(event['C']['result'])
-        # 目录不存在，则创建
+        # 如果该目录不存在，则创建
         if not os.path.exists(save_path):
             os.makedirs(save_path)
-        # 绘制所有的文本段落
-        text.draw_text((save_path + "/content.png"), bg_color_1)
-        text_A1.draw_text((save_path + "/choice_A.png"), bg_color_2)
-        text_A2.draw_text((save_path + "/result_A.png"), bg_color_1)
-        text_B1.draw_text((save_path + "/choice_B.png"), bg_color_2)
-        text_B2.draw_text((save_path + "/result_B.png"), bg_color_1)
-        text_C1.draw_text((save_path + "/choice_C.png"), bg_color_2)
-        text_C2.draw_text((save_path + "/result_C.png"), bg_color_1)
+        # 如果是确定结果事件
+        if event['type'] == "fixed_result":
+            text = TextImage(event['result'])
+            text.draw_text((save_path + "/result.png"), bg_color_1)
+        # 如果是随机结果事件
+        elif event['type'] == "random_result":
+            # 读取所有结果字符串
+            text_A = TextImage(event['A']['result'])
+            text_B = TextImage(event['B']['result'])
+            text_C = TextImage(event['C']['result'])
+            text_A.draw_text((save_path + "/result_A.png"), bg_color_1)
+            text_B.draw_text((save_path + "/result_B.png"), bg_color_1)
+            text_C.draw_text((save_path + "/result_C.png"), bg_color_1)
+        elif event['type'] == "multiple_choice":
+            # 读取所有字符串
+            text = TextImage(event['content'])
+            text_A1 = TextImage(event['A']['choice'])
+            text_A2 = TextImage(event['A']['result'])
+            text_B1 = TextImage(event['B']['choice'])
+            text_B2 = TextImage(event['B']['result'])
+            text_C1 = TextImage(event['C']['choice'])
+            text_C2 = TextImage(event['C']['result'])
+            # 绘制所有的文本段落
+            text.draw_text((save_path + "/content.png"), bg_color_1)
+            text_A1.draw_text((save_path + "/choice_A.png"), bg_color_2)
+            text_A2.draw_text((save_path + "/result_A.png"), bg_color_1)
+            text_B1.draw_text((save_path + "/choice_B.png"), bg_color_2)
+            text_B2.draw_text((save_path + "/result_B.png"), bg_color_1)
+            text_C1.draw_text((save_path + "/choice_C.png"), bg_color_2)
+            text_C2.draw_text((save_path + "/result_C.png"), bg_color_1)
     
     #n = TextImage("发生的事件为zzy去干嘛了我也不知打啊" * 5)
     #n.draw_text()

@@ -9,7 +9,6 @@ import sys
 import pygame
 from location import Location
 import json
-import random
 from player import Player
 import os
 
@@ -42,8 +41,8 @@ def update_screen(ai_settings, screen, gs, play_button, locations,
     # 显示最新绘制的屏幕
     pygame.display.flip()
 
-def check_events(ai_settings, gs, play_button, events_dict, events_imgs, 
-                 messageboard, dice, pq):
+def check_events(ai_settings, gs, play_button, locations, events_dict, 
+                 events_imgs, messageboard, dice, pq):
     """监视并相应鼠标和键盘事件"""
     for event in pygame.event.get():
         # 退出事件
@@ -51,11 +50,12 @@ def check_events(ai_settings, gs, play_button, events_dict, events_imgs,
             pygame.quit()
             sys.exit()
         if event.type == pygame.MOUSEBUTTONDOWN:
-            check_click_events(ai_settings, gs, play_button, events_dict, 
-                               events_imgs, messageboard, dice, pq)
+            check_click_events(ai_settings, gs, play_button, locations, 
+                               events_dict, events_imgs, messageboard, dice, 
+                               pq)
 
-def check_click_events(ai_settings, gs, play_button, events_dict, events_imgs, 
-                       messageboard, dice, pq):
+def check_click_events(ai_settings, gs, play_button, locations, events_dict, 
+                       events_imgs, messageboard, dice, pq):
     """处理鼠标点击事件的函数"""
     # 定位鼠标点击位置
     mouse_x, mouse_y = pygame.mouse.get_pos()
@@ -72,12 +72,16 @@ def check_click_events(ai_settings, gs, play_button, events_dict, events_imgs,
                 step = dice.roll_dice()
                 # 玩家移动相应的点数
                 cur_player.move(step)
-                # 游戏进入下一阶段
-                gs.game_state = ai_settings.CHOOSE
                 # 随机得到事件的编号（列表下标）
-                gs.cur_event_index = trigger_location_event(ai_settings, 
-                                                            events_dict)
+                gs.cur_event_index = locations[cur_player.pos].trigger_event()
                 gs.cur_event_imgs = events_imgs[gs.cur_event_index]
+                # 如果随机得到的事件是多项选择事件，则进入选择阶段
+                if events_dict[gs.cur_event_index]['type'] == "multiple_choice":
+                    gs.game_state = ai_settings.CHOOSE
+                # 否则跳过选择阶段，直接进入结束回合阶段
+                else:
+                    cur_player.invest(events_dict[gs.cur_event_index]['change'])
+                    gs.game_state = ai_settings.END_ROUND
         # 如果此时应该进行选择，则判断点击位置在哪个选项的区域内
         elif gs.game_state == ai_settings.CHOOSE:
             # 选项 A
@@ -147,37 +151,57 @@ def read_event_images(ai_settings):
     event_images = []
     dir_path = ai_settings.event_images_dir
     dir_cnt = 0
-    # 获得文件夹数量
-    for lists in os.listdir(dir_path):
-        sub_path = os.path.join(dir_path, lists)
+    # 计算文件夹数量
+    for name in os.listdir(dir_path):
+        sub_path = os.path.join(dir_path, name)
         if os.path.isdir(sub_path):
             dir_cnt += 1
     #print("dir_cnt: " + str(dir_cnt))
     # 遍历所有文件夹
     for i in range(0, dir_cnt):
         event_dir_path = dir_path + "/event_" + str(i).zfill(3)
-        #print(event_dir_path)
-        img_content = pygame.image.load((event_dir_path + "/content.png"))
-        img_choice_a = pygame.image.load((event_dir_path + "/choice_A.png"))
-        img_choice_b = pygame.image.load((event_dir_path + "/choice_B.png"))
-        img_choice_c = pygame.image.load((event_dir_path + "/choice_C.png"))
-        img_result_a = pygame.image.load((event_dir_path + "/result_A.png"))
-        img_result_b = pygame.image.load((event_dir_path + "/result_B.png"))
-        img_result_c = pygame.image.load((event_dir_path + "/result_C.png"))
-        event_dict = dict({
-                'content': img_content, 
-                'A': {'choice': img_choice_a, 'result': img_result_a},
-                'B': {'choice': img_choice_b, 'result': img_result_b},
-                'C': {'choice': img_choice_c, 'result': img_result_c}
+        file_cnt = 0
+        # 计算文件数量
+        for name in os.listdir(event_dir_path):
+            sub_path = os.path.join(event_dir_path, name)
+            if os.path.isfile(sub_path):
+                file_cnt += 1
+        # 如果目录下只有一个文件，则视为固定结果事件文件夹处理
+        if file_cnt == 1:
+            img_result = pygame.image.load((event_dir_path + "/result.png"))
+            event_dict = dict({
+                'result': img_result
                 })
-        event_images.append(event_dict)
+            event_images.append(event_dict)
+        # 如果目录下有三个文件，则视为随机结果事件文件夹处理
+        elif file_cnt == 3:
+            img_result_a = pygame.image.load((event_dir_path + "/result_A.png"))
+            img_result_b = pygame.image.load((event_dir_path + "/result_B.png"))
+            img_result_c = pygame.image.load((event_dir_path + "/result_C.png"))
+            event_dict = dict({
+                'A': {'result': img_result_a},
+                'B': {'result': img_result_b},
+                'C': {'result': img_result_c}
+                })
+            event_images.append(event_dict)
+        # 如果目录下有七个文件，则视为多项选择事件文件夹处理
+        elif file_cnt == 7:
+            img_content = pygame.image.load((event_dir_path + "/content.png"))
+            img_choice_a = pygame.image.load((event_dir_path + "/choice_A.png"))
+            img_choice_b = pygame.image.load((event_dir_path + "/choice_B.png"))
+            img_choice_c = pygame.image.load((event_dir_path + "/choice_C.png"))
+            img_result_a = pygame.image.load((event_dir_path + "/result_A.png"))
+            img_result_b = pygame.image.load((event_dir_path + "/result_B.png"))
+            img_result_c = pygame.image.load((event_dir_path + "/result_C.png"))
+            event_dict = dict({
+                    'content': img_content, 
+                    'A': {'choice': img_choice_a, 'result': img_result_a},
+                    'B': {'choice': img_choice_b, 'result': img_result_b},
+                    'C': {'choice': img_choice_c, 'result': img_result_c}
+                    })
+            event_images.append(event_dict)
     #print(len(event_images))
     return event_images
-
-def trigger_location_event(ai_settings, events_dict):
-    """在每个地点触发事件"""
-    index = random.randint(0, ai_settings.event_cnt - 1)
-    return index
 
 def create_player_queue(ai_settings, screen, locations, pq):
     # 创建所有玩家

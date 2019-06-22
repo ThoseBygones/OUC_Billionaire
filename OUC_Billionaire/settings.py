@@ -47,7 +47,7 @@ class Settings():
         self.location_cnt = 0
         
         # 设置地点事件数量
-        self.event_cnt = 2
+        self.event_cnt = 4
         
         # 设置地点数据文件路径
         self.locations_data_path = "data/locations_list.txt"
