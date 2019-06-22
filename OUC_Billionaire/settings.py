@@ -20,7 +20,12 @@ class Settings():
         self.CHOOSE = 1
         self.END_ROUND = 2
         
-        # 设置背景图片为海大地图
+        # 设置游戏开始前的背景图片
+        self.bg_image = pygame.image.load("images/ouc_billionaire.png")
+        # 设置开始游戏按钮
+        self.play_button = pygame.image.load("images/play_button.png")
+        
+        # 设置海大地图
         self.map = pygame.image.load("images/map.png")
         
         # 设置玩家初始拥有的金钱

@@ -7,6 +7,7 @@ Created on Sun Jun  9 23:47:48 2019
 
 import pygame
 from settings import Settings
+from button import Button
 import game_functions as gf
 from dice import Dice
 from messageboard import Messageboard
@@ -22,6 +23,9 @@ def run_game():
     ai_settings = Settings()
     screen = pygame.display.set_mode(
             (ai_settings.screen_width, ai_settings.screen_height))
+    
+    # 创建“开始游戏”按钮
+    play_button = Button(screen, ai_settings.play_button)
     
     # 设置窗口顶部导航栏标题
     pygame.display.set_caption("OUC Billionaire")
@@ -56,10 +60,10 @@ def run_game():
     
     # 开始游戏的主循环
     while True:
-        gf.check_events(ai_settings, gs, events_dict, event_images, 
-                        messageboard, dice, player_que)
-        gf.update_screen(ai_settings, screen, gs, locations, location_points, 
-                         events_dict, event_images, messageboard, dice, 
-                         player_que)
+        gf.check_events(ai_settings, gs, play_button, events_dict, 
+                        event_images, messageboard, dice, player_que)
+        gf.update_screen(ai_settings, screen, gs, play_button, locations, 
+                         location_points, events_dict, event_images, 
+                         messageboard, dice, player_que)
 
 run_game()

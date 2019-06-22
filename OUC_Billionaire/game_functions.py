@@ -13,36 +13,37 @@ import random
 from player import Player
 import os
 
-def update_screen(ai_settings, screen, gs, locations, location_points, 
-                  event, event_imgs, messageboard, dice, pq):
+def update_screen(ai_settings, screen, gs, play_button, locations, 
+                  location_points, event, event_imgs, messageboard, dice, pq):
     """更新屏幕上的图像，并切换到新屏幕"""
     # 每次循环时都重新绘制屏幕
     screen.fill(ai_settings.bg_color)
     
-    #`绘制背景图片
-    screen.blit(ai_settings.map, (0, 0))
-    
-    # 绘制所有地点
-    for location in locations:
-        location.draw_location()
+    # 游戏被激活，则显示游戏界面
+    if gs.game_active == True:
+        #`绘制地图
+        screen.blit(ai_settings.map, (0, 0))
+        # 绘制所有地点
+        for location in locations:
+            location.draw_location()
+        # 绘制地点之间的连线
+        pygame.draw.lines(screen, ai_settings.line_color, True, location_points, 3)
+        # 绘制所有的玩家
+        pq.reverse_draw()
+        # 绘制信息板
+        messageboard.draw_messageboard(gs, event_imgs, pq)
+        # 绘制骰子
+        dice.draw_dice(dice.cur_dice)
+    # 否则显示开始游戏界面
+    else:
+        screen.blit(ai_settings.bg_image, (0, 0))
+        play_button.draw_button()
         
-    # 绘制地点之间的连线
-    pygame.draw.lines(screen, ai_settings.line_color, True, location_points, 3)
-        
-    # 绘制所有的玩家
-    pq.reverse_draw()
-    
-    # 绘制信息板
-    messageboard.draw_messageboard(gs, event_imgs, pq)
-    
-    # 绘制骰子
-    dice.draw_dice(dice.cur_dice)
-    
     # 显示最新绘制的屏幕
     pygame.display.flip()
 
-def check_events(ai_settings, gs, events_dict, events_imgs, messageboard, dice, 
-                 pq):
+def check_events(ai_settings, gs, play_button, events_dict, events_imgs, 
+                 messageboard, dice, pq):
     """监视并相应鼠标和键盘事件"""
     for event in pygame.event.get():
         # 退出事件
@@ -50,46 +51,62 @@ def check_events(ai_settings, gs, events_dict, events_imgs, messageboard, dice,
             pygame.quit()
             sys.exit()
         if event.type == pygame.MOUSEBUTTONDOWN:
-            # 定位鼠标点击位置
-            mouse_x, mouse_y = pygame.mouse.get_pos()
-            #print(mouse_x, mouse_y)
+            check_click_events(ai_settings, gs, play_button, events_dict, 
+                               events_imgs, messageboard, dice, pq)
+
+def check_click_events(ai_settings, gs, play_button, events_dict, events_imgs, 
+                       messageboard, dice, pq):
+    """处理鼠标点击事件的函数"""
+    # 定位鼠标点击位置
+    mouse_x, mouse_y = pygame.mouse.get_pos()
+    #print(mouse_x, mouse_y)
+    # 获得当前回合游戏的玩家
+    cur_player = pq.get_first()
+    # 检测游戏是否处于激活状态
+    if gs.game_active == True:
+        # 如果此时应该掷骰子
+        if gs.game_state == ai_settings.ROLL_DICE:
             # 检测点击位置是否在骰子图片区域内
-            #print(dice.rect.left, dice.rect.right)
-            # 获得当前回合游戏的玩家
-            cur_player = pq.get_first()
-            if (gs.game_state == ai_settings.ROLL_DICE and 
-                dice.rect.collidepoint(mouse_x, mouse_y)):
+            if dice.rect.collidepoint(mouse_x, mouse_y):
+                # 获得骰子的点数
                 step = dice.roll_dice()
+                # 玩家移动相应的点数
                 cur_player.move(step)
+                # 游戏进入下一阶段
                 gs.game_state = ai_settings.CHOOSE
+                # 随机得到事件的编号（列表下标）
                 gs.cur_event_index = trigger_location_event(ai_settings, 
                                                             events_dict)
                 gs.cur_event_imgs = events_imgs[gs.cur_event_index]
-                #messageboard.draw_messageboard(gs, player1)
-                #pygame.display.update()
-            elif gs.game_state == ai_settings.CHOOSE:
-                if messageboard.event_msg_rect[1].collidepoint(mouse_x, 
-                                              mouse_y):
-                    gs.cur_event_imgs = gs.cur_event_imgs['A']
-                    cur_player.invest(events_dict[gs.cur_event_index]['A']['change'])
-                elif messageboard.event_msg_rect[2].collidepoint(mouse_x, mouse_y):
-                    gs.cur_event_imgs = gs.cur_event_imgs['B']
-                    cur_player.invest(events_dict[gs.cur_event_index]['B']['change'])
-                elif messageboard.event_msg_rect[3].collidepoint(mouse_x, mouse_y):
-                    gs.cur_event_imgs = gs.cur_event_imgs['C']
-                    cur_player.invest(events_dict[gs.cur_event_index]['C']['change'])
-                else:
-                    break
-                gs.game_state = ai_settings.END_ROUND
-                #messageboard.draw_messageboard(gs, player1)
-                #pygame.display.update()
-            elif gs.game_state == ai_settings.END_ROUND:
-                if messageboard.button_rect.collidepoint(mouse_x, mouse_y):
-                    gs.cur_event = None
-                    pq.next_round()
-                    gs.game_state = ai_settings.ROLL_DICE
-                    #messageboard.draw_messageboard(gs, player1)
-                    #pygame.display.update()
+        # 如果此时应该进行选择，则判断点击位置在哪个选项的区域内
+        elif gs.game_state == ai_settings.CHOOSE:
+            # 选项 A
+            if messageboard.event_msg_rect[1].collidepoint(mouse_x, mouse_y):
+                gs.cur_event_imgs = gs.cur_event_imgs['A']
+                cur_player.invest(events_dict[gs.cur_event_index]['A']['change'])
+            # 选项 B
+            elif messageboard.event_msg_rect[2].collidepoint(mouse_x, mouse_y):
+                gs.cur_event_imgs = gs.cur_event_imgs['B']
+                cur_player.invest(events_dict[gs.cur_event_index]['B']['change'])
+            # 选项 C
+            elif messageboard.event_msg_rect[3].collidepoint(mouse_x, mouse_y):
+                gs.cur_event_imgs = gs.cur_event_imgs['C']
+                cur_player.invest(events_dict[gs.cur_event_index]['C']['change'])
+            # 不在点击范围内
+            else:
+                return
+            gs.game_state = ai_settings.END_ROUND
+        # 如果此时应该结束回合，则判断点击位置是否在结束回合按钮区域内
+        elif gs.game_state == ai_settings.END_ROUND:
+            if messageboard.button_rect.collidepoint(mouse_x, mouse_y):
+                gs.cur_event = None
+                pq.next_round()
+                gs.game_state = ai_settings.ROLL_DICE
+    # 游戏未激活
+    else:
+        # 检测是否点击开始游戏按钮
+        if play_button.img_rect.collidepoint(mouse_x, mouse_y):
+            gs.game_active = True
 
 def create_location(ai_settings, screen, locations, index, x, y, name):
     """创建一个地点"""

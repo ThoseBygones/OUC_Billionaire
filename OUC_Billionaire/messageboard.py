@@ -30,7 +30,7 @@ class Messageboard():
         self.box_3 = pygame.Rect(977, 400, (1320 - 977), 260)
         
         # 设置结束回合图片路径
-        image_path_str = "images/end_round.png"
+        image_path_str = "images/end_round_button.png"
         self.end_round_button = pygame.image.load(image_path_str)
         
     def update_players_message(self, pq):
