@@ -8,7 +8,9 @@ Created on Mon Jun 10 22:05:22 2019
 import sys
 import pygame
 from location import Location
-from hospital import Hospital
+from location import Hospital
+from location import ChemistryInstitute
+from location import SouthDistrict
 import json
 from player import Player
 import os
@@ -72,7 +74,8 @@ def check_click_events(ai_settings, gs, play_button, locations, events_dict,
                 # 玩家移动相应的点数
                 pq.cur_player.move(step)
                 # 随机得到事件的编号（列表下标）
-                gs.cur_event_index = locations[pq.cur_player.pos].trigger_event()
+                gs.cur_event_index = locations[pq.cur_player.pos].trigger_event(
+                        pq.cur_player)
                 gs.cur_event_imgs = events_imgs[gs.cur_event_index]
                 # 如果随机得到的事件是多项选择事件，则进入选择阶段
                 if events_dict[gs.cur_event_index]['type'] == "multiple_choice":
@@ -115,6 +118,10 @@ def create_location(ai_settings, screen, locations, index, x, y, name):
     """创建一个地点"""
     if name == "校医院":
         location = Hospital(ai_settings, screen, index, x, y, name)
+    elif name == "化院":
+        location = ChemistryInstitute(ai_settings, screen, index, x, y, name)
+    elif name == "南区":
+        location = SouthDistrict(ai_settings, screen, index, x, y, name)
     else:
         location = Location(ai_settings, screen, index, x, y, name)
     locations.append(location)
@@ -146,6 +153,8 @@ def read_events_list(ai_settings):
     with open(ai_settings.events_path, encoding = ('utf-8')) as file:
         events_dict = json.load(file)
         #print(events_dict)
+        # 更新事件总数
+        ai_settings.event_cnt = len(events_dict['events'])
         return events_dict['events']
 
 def read_event_images(ai_settings):
@@ -207,11 +216,11 @@ def read_event_images(ai_settings):
 
 def create_player_queue(ai_settings, screen, locations, pq):
     # 创建所有玩家
-    player1 = Player(ai_settings, screen, locations, 1, "ZZY")
-    player2 = Player(ai_settings, screen, locations, 2, "SJT")
-    player3 = Player(ai_settings, screen, locations, 3, "JFX")
-    player4 = Player(ai_settings, screen, locations, 4, "LLN")
-    player5 = Player(ai_settings, screen, locations, 5, "LYF")
+    player1 = Player(ai_settings, screen, locations, 1, "曾致元")
+    player2 = Player(ai_settings, screen, locations, 2, "孙镜涛")
+    player3 = Player(ai_settings, screen, locations, 3, "鞠丰禧")
+    player4 = Player(ai_settings, screen, locations, 4, "罗立娜")
+    player5 = Player(ai_settings, screen, locations, 5, "李亚菲")
     # 将所有玩家加入游戏队列
     pq.add_player(player1)
     pq.add_player(player2)

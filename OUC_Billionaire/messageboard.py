@@ -42,7 +42,7 @@ class Messageboard():
         for i in range(0, player_cnt):
             player = pq.queue[i]
             player_msg_str_1 = player.player_name + "："
-            player_msg_str_2 = ("拥有金钱：$" + str(player.money) + "  当前位置：" 
+            player_msg_str_2 = ("拥有金钱：" + str(player.money) + "万  当前位置：" 
                                 + str(self.locations[player.pos].name))
             self.player_msg_1 = self.font.render(player_msg_str_1, True, 
                                                  self.text_color_1)

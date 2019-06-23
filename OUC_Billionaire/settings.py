@@ -29,7 +29,7 @@ class Settings():
         self.map = pygame.image.load("images/map.png")
         
         # 设置玩家初始拥有的金钱
-        self.player_init_money = 10000
+        self.player_init_money = 1000
         
         # 设置地点圆点半径大小和颜色
         self.circle_radius = 6
@@ -47,7 +47,7 @@ class Settings():
         self.location_cnt = 0
         
         # 设置地点事件数量
-        self.event_cnt = 4
+        self.event_cnt = 0
         
         # 设置地点数据文件路径
         self.locations_data_path = "data/locations_list.txt"
