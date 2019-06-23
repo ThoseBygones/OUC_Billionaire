@@ -38,7 +38,7 @@ class Messageboard():
         self.player_msg = []
         self.player_msg_rect = []
         # 顺序遍历玩家队列里的所有玩家
-        player_cnt = pq.get_size()
+        player_cnt = pq.size
         for i in range(0, player_cnt):
             player = pq.queue[i]
             player_msg_str_1 = player.player_name + "："
@@ -118,13 +118,12 @@ class Messageboard():
         
         # 显示玩家信息并在屏幕上绘制
         self.update_players_message(pq)
-        for i in range(0, pq.get_size()):
+        for i in range(0, pq.size):
             self.screen.blit(self.player_msg[i][0], self.player_msg_rect[i][0])
             self.screen.blit(self.player_msg[i][1], self.player_msg_rect[i][1])
         
         # 显示当前回合对应玩家随机到的事件信息并在屏幕上绘制
-        cur_player = pq.get_first()
-        self.update_event_message(gs, cur_player)
+        self.update_event_message(gs, pq.cur_player)
         #print(len(self.event_msg_rect))
         for i in range(0, len(self.event_msg_rect)):
             self.screen.blit(self.event_msg[i], self.event_msg_rect[i])

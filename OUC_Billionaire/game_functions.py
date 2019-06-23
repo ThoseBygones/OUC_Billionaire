@@ -61,8 +61,6 @@ def check_click_events(ai_settings, gs, play_button, locations, events_dict,
     # 定位鼠标点击位置
     mouse_x, mouse_y = pygame.mouse.get_pos()
     #print(mouse_x, mouse_y)
-    # 获得当前回合游戏的玩家
-    cur_player = pq.get_first()
     # 检测游戏是否处于激活状态
     if gs.game_active == True:
         # 如果此时应该掷骰子
@@ -72,31 +70,31 @@ def check_click_events(ai_settings, gs, play_button, locations, events_dict,
                 # 获得骰子的点数
                 step = dice.roll_dice()
                 # 玩家移动相应的点数
-                cur_player.move(step)
+                pq.cur_player.move(step)
                 # 随机得到事件的编号（列表下标）
-                gs.cur_event_index = locations[cur_player.pos].trigger_event()
+                gs.cur_event_index = locations[pq.cur_player.pos].trigger_event()
                 gs.cur_event_imgs = events_imgs[gs.cur_event_index]
                 # 如果随机得到的事件是多项选择事件，则进入选择阶段
                 if events_dict[gs.cur_event_index]['type'] == "multiple_choice":
                     gs.game_state = ai_settings.CHOOSE
                 # 否则跳过选择阶段，直接进入结束回合阶段
                 else:
-                    cur_player.invest(events_dict[gs.cur_event_index]['change'])
+                    pq.cur_player.invest(events_dict[gs.cur_event_index]['change'])
                     gs.game_state = ai_settings.END_ROUND
         # 如果此时应该进行选择，则判断点击位置在哪个选项的区域内
         elif gs.game_state == ai_settings.CHOOSE:
             # 选项 A
             if messageboard.event_msg_rect[1].collidepoint(mouse_x, mouse_y):
                 gs.cur_event_imgs = gs.cur_event_imgs['A']
-                cur_player.invest(events_dict[gs.cur_event_index]['A']['change'])
+                pq.cur_player.invest(events_dict[gs.cur_event_index]['A']['change'])
             # 选项 B
             elif messageboard.event_msg_rect[2].collidepoint(mouse_x, mouse_y):
                 gs.cur_event_imgs = gs.cur_event_imgs['B']
-                cur_player.invest(events_dict[gs.cur_event_index]['B']['change'])
+                pq.cur_player.invest(events_dict[gs.cur_event_index]['B']['change'])
             # 选项 C
             elif messageboard.event_msg_rect[3].collidepoint(mouse_x, mouse_y):
                 gs.cur_event_imgs = gs.cur_event_imgs['C']
-                cur_player.invest(events_dict[gs.cur_event_index]['C']['change'])
+                pq.cur_player.invest(events_dict[gs.cur_event_index]['C']['change'])
             # 不在点击范围内
             else:
                 return
@@ -215,8 +213,8 @@ def create_player_queue(ai_settings, screen, locations, pq):
     player4 = Player(ai_settings, screen, locations, 4, "LLN")
     player5 = Player(ai_settings, screen, locations, 5, "LYF")
     # 将所有玩家加入游戏队列
-    pq.push(player1)
-    pq.push(player2)
-    pq.push(player3)
-    pq.push(player4)
-    pq.push(player5)
+    pq.add_player(player1)
+    pq.add_player(player2)
+    pq.add_player(player3)
+    pq.add_player(player4)
+    pq.add_player(player5)
