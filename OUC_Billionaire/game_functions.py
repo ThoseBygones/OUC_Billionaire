@@ -8,6 +8,7 @@ Created on Mon Jun 10 22:05:22 2019
 import sys
 import pygame
 from location import Location
+from hospital import Hospital
 import json
 from player import Player
 import os
@@ -114,7 +115,10 @@ def check_click_events(ai_settings, gs, play_button, locations, events_dict,
 
 def create_location(ai_settings, screen, locations, index, x, y, name):
     """创建一个地点"""
-    location = Location(ai_settings, screen, index, x, y, name)
+    if name == "校医院":
+        location = Hospital(ai_settings, screen, index, x, y, name)
+    else:
+        location = Location(ai_settings, screen, index, x, y, name)
     locations.append(location)
 
 def create_all_locations(ai_settings, screen, locations, location_points):

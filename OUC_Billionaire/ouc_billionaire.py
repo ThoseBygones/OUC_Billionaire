@@ -58,10 +58,12 @@ def run_game():
     # 游戏当前的状态
     gs = GameState(ai_settings)
     
-    # 开始游戏的主循环
+    # 游戏的主循环
     while True:
+        # 检测游戏中的鼠标、键盘事件
         gf.check_events(ai_settings, gs, play_button, locations, events_dict, 
                         event_images, messageboard, dice, player_que)
+        # 更新屏幕显示
         gf.update_screen(ai_settings, screen, gs, play_button, locations, 
                          location_points, events_dict, event_images, 
                          messageboard, dice, player_que)

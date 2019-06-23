@@ -5,15 +5,6 @@ Created on Tue Jun 18 20:22:52 2019
 @author: Sherlock Holmes
 """
 
-"""
-class Player():
-    def __init__(self, name):
-        self.name = name
-    
-    def say(self):
-        print(self.name)
-        """
-
 class PlayerQueue():
     """玩家队列类，用于管理玩家的轮流游戏"""
     def __init__(self):

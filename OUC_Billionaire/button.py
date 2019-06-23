@@ -10,6 +10,7 @@ class Button():
     def __init__(self, screen, img):
         self.screen = screen
         self.screen_rect = screen.get_rect()
+        # 获得按钮图像及其位置参数
         self.img = img
         self.img_rect = self.img.get_rect()
         self.img_rect.centerx = self.screen_rect.centerx
